@@ -54,6 +54,14 @@ class GL(object):
                 res[i] %= self.modulo
             return Vect(self.size, self.modulo, res)
 
+    def __pow__(self, other):
+        res = self
+        i = 1
+        while i < other:
+            res *= self
+            i += 1
+        return res
+
     def gen(self):
         matrix = []
         for i in range(self.size):
