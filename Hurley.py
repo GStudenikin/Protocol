@@ -2,20 +2,31 @@ import LinGr
 
 # initialization Reciever's parameters
 # return params(y, B, B1, B2)
-def initReciever(s, m):
+# c - generator of cyclic group
+def initReciever(s, m, c = None):
     params = []
+    if(c == None):
+        params.append(LinGr.Diag(s, m))
+        params.append(LinGr.Diag(s, m))
+        params.append(LinGr.Diag(s, m))
+    else:
+        params.append(LinGr.CG(c))
+        params.append(LinGr.CG(c))
+        params.append(LinGr.CG(c))
     params.append(LinGr.Vect(s, m))
-    params.append(LinGr.Diag(s, m))
-    params.append(LinGr.Diag(s, m))
-    params.append(LinGr.Diag(s, m))
     return params
 
 # initialization Sender's parameters
 # return params(A, A1)
-def initSender(s,m):
+# c - generator of cyclic group
+def initSender(s, m, c = None):
     params = []
-    params.append(LinGr.Diag(s, m))
-    params.append(LinGr.Diag(s, m))
+    if(c == None):
+        params.append(LinGr.Diag(s, m))
+        params.append(LinGr.Diag(s, m))
+    else:
+        params.append(LinGr.CG(c))
+        params.append(LinGr.CG(c))
     return params
 
 # 1st step of reciever

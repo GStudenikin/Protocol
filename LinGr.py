@@ -1,6 +1,8 @@
 import copy
 import random
 
+
+# Euclidean algorithm
 def egcd(a, b):
     if a == 0:
         return (b, 0, 1)
@@ -8,13 +10,14 @@ def egcd(a, b):
         g, x, y = egcd(b % a, a)
         return (g, y - (b // a) * x, x)
 
-
 # x = mulinv(b) mod n, (x * b) % n == 1
 def mulinv(b, n):
     g, x, _ = egcd(b, n)
     if g == 1:
         return x % n
 
+
+# Linear group
 class GL(object):
     def __init__(self, size, modulo, matrix = None):
         self.size = size
@@ -136,6 +139,8 @@ class GL(object):
         mul = trans.muln(inv)
         return mul.mod()
 
+
+# Special Linear group
 class SL(GL):
     def __init__(self, size, modulo, matrix = None):
         self.size = size
@@ -148,6 +153,8 @@ class SL(GL):
         else:
             self.matrix = matrix
 
+
+# Diagonal subgroup
 class Diag(GL):
     def gen(self):
         matrix = []
@@ -174,6 +181,8 @@ class Diag(GL):
             matrix[i][i] = mulinv(self.matrix[i][i], self.modulo)
         return Diag(self.size, self.modulo, matrix)
 
+
+# Cyclic group
 class CG(GL):
     def __init__(self, other, st = None):
         self.size = other.size
@@ -187,7 +196,7 @@ class CG(GL):
             self.st = st
 
 
-
+# Vector
 class Vect(object):
     def __init__(self, size, modulo, vect = None):
         self.size = size
@@ -211,7 +220,6 @@ class Vect(object):
         for i in range(self.size):
             res.append((self.vect[i] - other.vect[i]) % self.modulo)
         return Vect(self.size, self.modulo, res)
-
 
     def __mul__(self, other):
         size = self.size
