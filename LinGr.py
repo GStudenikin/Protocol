@@ -74,6 +74,15 @@ class GL(object):
                 self.matrix[i][j] %= self.modulo
         return self
 
+    def get_exp(self):
+        i = 1
+        temp = self
+        one = [[1,0,0],[0,1,0],[0,0,1]]
+        while temp.matrix != one:
+            temp *= self
+            i += 1
+        return i
+
     def det(self):
         size = self.size
         if size == 1:
@@ -164,6 +173,18 @@ class Diag(GL):
         for i in range(size):
             matrix[i][i] = mulinv(self.matrix[i][i], self.modulo)
         return Diag(self.size, self.modulo, matrix)
+
+class CG(GL):
+    def __init__(self, other, st = None):
+        self.size = other.size
+        self.modulo = other.modulo
+        if(st == None):
+            st_t = random.randint(1, 1000)
+            self.matrix = (other ** st_t).matrix
+            self.st = st_t
+        else:
+            self.matrix = (other ** st).matrix
+            self.st = st
 
 
 
