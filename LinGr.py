@@ -139,6 +139,46 @@ class GL(object):
         mul = trans.muln(inv)
         return mul.mod()
 
+    def gauss_tr(self):
+        triangle = copy.deepcopy(self)
+        size = self.size
+        j = 0
+        i = 1
+        while j <= size - 2:
+            while i <= size - 1:
+                if (triangle.matrix[j][j] == 0):
+                    k = j
+                    while k < size:
+                        if (triangle.matrix[k][j] != 0):
+                            triangle.matrix[k], triangle.matrix[j] = triangle.matrix[j], triangle.matrix[k]
+                            break
+                        k += 1
+                aij = triangle.matrix[i][j]
+                ajj = triangle.matrix[j][j]
+                if (ajj != 0):
+                    inv = mulinv(ajj, self.modulo)
+                    for t in range(size):
+                        triangle.matrix[i][t] = (triangle.matrix[i][t] - (aij * inv * triangle.matrix[j][t])) % self.modulo
+                i += 1
+            j += 1
+            i = j + 1
+        return triangle.mod()
+
+    def gauss_det(self):
+        if(self.size == 2):
+            mat = self.matrix
+            det = mat[0][0]*mat[1][1] - mat[0][1]*mat[1][0]
+            return det % self.modulo
+        if(self.size == 3):
+            mat = self.matrix
+            det = (mat[0][0] * mat[1][1] * mat[2][2]) + (mat[1][0] * mat[2][1] * mat[0][2]) + (mat[0][1] * mat[1][2] * mat[2][0]) - (mat[0][2] * mat[1][1] * mat[2][0]) - (mat[1][0] * mat[0][1] * mat[2][2]) - (mat[2][1] * mat[1][2] * mat[0][0])
+            return det % self.modulo
+        det = 1
+        triangle = self.gauss_tr()
+        size = triangle.size
+        for i in range(size):
+            det *= triangle.matrix[i][i]
+        return det % self.modulo
 
 # Special Linear group
 class SL(GL):
@@ -167,9 +207,9 @@ class Diag(GL):
         return matrix
 
     def det(self):
-        determinant = 0
+        determinant = 1
         for i in range(self.size):
-            determinant += self.matrix[i][i]
+            determinant *= self.matrix[i][i]
         return determinant % self.modulo
 
     def inv(self):
