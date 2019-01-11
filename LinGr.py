@@ -151,6 +151,8 @@ class GL(object):
                     while k < size:
                         if (triangle.matrix[k][j] != 0):
                             triangle.matrix[k], triangle.matrix[j] = triangle.matrix[j], triangle.matrix[k]
+                            print(triangle)
+                            print()
                             break
                         k += 1
                 aij = triangle.matrix[i][j]
@@ -179,6 +181,35 @@ class GL(object):
         for i in range(size):
             det *= triangle.matrix[i][i]
         return det % self.modulo
+
+    def dett(self):
+        temp = copy.deepcopy(self)
+        size = self.size
+        j = 0
+        i = j + 1
+        while j <= size - 2:
+            k = j+1
+            if(temp.matrix[j][j] == 0):
+                while k < size:
+                    if(temp.matrix[k][j]!=0):
+                        temp.matrix[k],temp.matrix[j] = temp.matrix[j],temp.matrix[k]
+                        break
+                    k+=1
+            print(temp)
+            print()
+            while i <= size - 1:
+                if (j == 0):
+                    d = 1
+                else:
+                    d = temp.matrix[j - 1][j - 1]
+                ajj = temp.matrix[j][j]
+                aij = temp.matrix[i][j]
+                for t in range(size):
+                    temp.matrix[i][t] = (ajj * temp.matrix[i][t] - aij * temp.matrix[j][t]) // d
+                i += 1
+            j += 1
+            i = j + 1
+        return temp.matrix[size-1][size-1] % self.modulo
 
 # Special Linear group
 class SL(GL):
@@ -282,3 +313,21 @@ class Vect(object):
         for i in range(self.size):
             vector.append(random.randint(0, (self.modulo - 1)))
         return vector
+
+
+
+s = 4
+m = 11
+
+for i in range(10000):
+    a = GL(s,m)
+    if(a.det() != a.dett()):
+        print("a")
+        print(a)
+        print()
+        print("dett",a.dett())
+        print()
+        print("det",a.det())
+        print("error")
+        break
+print(i)
