@@ -139,6 +139,18 @@ class GL(object):
         mul = trans.muln(inv)
         return mul.mod()
 
+    def one(self):
+        matrix = []
+        for i in range(self.size):
+            matrix.append([random.randint(1, (self.modulo - 1)) for j in range(self.size)])
+        for t in range(self.size):
+            for k in range(self.size):
+                if t != k:
+                    matrix[t][k] = 0
+                else:
+                    matrix[t][k] = 1
+        return GL(self.size, self.modulo, matrix)
+
     def gauss_tr(self):
         triangle = copy.deepcopy(self)
         size = self.size
@@ -179,6 +191,7 @@ class GL(object):
         for i in range(size):
             det *= triangle.matrix[i][i]
         return det % self.modulo
+
 
 # Special Linear group
 class SL(GL):
@@ -227,9 +240,14 @@ class CG(GL):
     def __init__(self, other, st = None):
         self.size = other.size
         self.modulo = other.modulo
+        one = self.one()
         if(st == None):
             st_t = random.randint(1, 1000)
-            self.matrix = (other ** st_t).matrix
+            temp = (other ** st_t).matrix
+            while(temp == one.matrix):
+                st_t = random.randint(1, 1000)
+                temp = (other ** st_t).matrix
+            self.matrix = temp
             self.st = st_t
         else:
             self.matrix = (other ** st).matrix
