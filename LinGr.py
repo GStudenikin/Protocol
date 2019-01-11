@@ -198,18 +198,14 @@ class GL(object):
             print(temp)
             print()
             while i <= size - 1:
-                if (j == 0):
-                    d = 1
-                else:
-                    d = temp.matrix[j - 1][j - 1]
                 ajj = temp.matrix[j][j]
                 aij = temp.matrix[i][j]
                 for t in range(size):
-                    temp.matrix[i][t] = (ajj * temp.matrix[i][t] - aij * temp.matrix[j][t]) // d
+                    temp.matrix[i][t] = (ajj*temp.matrix[i][t] - aij*temp.matrix[j][t])
                 i += 1
-            j += 1
-            i = j + 1
-        return temp.matrix[size-1][size-1] % self.modulo
+            j+=1
+            i = j+1
+        return temp.mod()
 
 # Special Linear group
 class SL(GL):
@@ -317,17 +313,13 @@ class Vect(object):
 
 
 s = 4
-m = 11
+m = 5
 
-for i in range(10000):
-    a = GL(s,m)
-    if(a.det() != a.dett()):
-        print("a")
-        print(a)
-        print()
-        print("dett",a.dett())
-        print()
-        print("det",a.det())
-        print("error")
-        break
-print(i)
+
+a = GL(s,m)
+
+print(a)
+print()
+d = a.dett()
+print(a.det())
+print(d)
