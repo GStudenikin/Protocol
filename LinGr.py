@@ -26,7 +26,7 @@ class GL(object):
             det = 0
             while(det == 0):
                 self.matrix = self.gen()
-                det = self.det()
+                det = self.det_bar()
         else:
             self.matrix = matrix
 
@@ -120,7 +120,7 @@ class GL(object):
         for i in range(size):
             for j in range(size):
                 minor = self.minor(i, j)
-                adj[i][j] = ((-1) ** (i + j)) * minor.det()
+                adj[i][j] = ((-1) ** (i + j)) * minor.det_bar()
         return GL(self.size, self.modulo, adj).mod()
 
     def muln(self, n):
@@ -132,12 +132,24 @@ class GL(object):
         return GL(self.size, self.modulo, matrix).mod()
 
     def inv(self):
-        det = self.det()
+        det = self.det_bar()
         inv = mulinv(det, self.modulo)
         adj = self.adj()
         trans = adj.trans()
         mul = trans.muln(inv)
         return mul.mod()
+
+    def one(self):
+        matrix = []
+        for i in range(self.size):
+            matrix.append([random.randint(1, (self.modulo - 1)) for j in range(self.size)])
+        for t in range(self.size):
+            for k in range(self.size):
+                if t!= k:
+                    matrix[t][k] = 0
+                else:
+                    matrix[t][k] = 1
+        return matrix
 
     def gauss_tr(self):
         triangle = copy.deepcopy(self)
@@ -182,30 +194,44 @@ class GL(object):
             det *= triangle.matrix[i][i]
         return det % self.modulo
 
-    def dett(self):
+# Bareiss's algorhitm to calculate determinant
+    def det_bar(self):
         temp = copy.deepcopy(self)
         size = self.size
         j = 0
-        i = j + 1
+        i = 1
         while j <= size - 2:
-            k = j+1
-            if(temp.matrix[j][j] == 0):
+            if temp.matrix[j][j] == 0:
+                k = j+1
                 while k < size:
                     if(temp.matrix[k][j]!=0):
-                        temp.matrix[k],temp.matrix[j] = temp.matrix[j],temp.matrix[k]
+                        temp.matrix[k], temp.matrix[j] = temp.matrix[j], temp.matrix[k]
+                        for index in range(size):
+                            temp.matrix[k][index] *= -1
                         break
-                    k+=1
-            print(temp)
-            print()
+                    else:
+                        k += 1
+                    if(k == size):
+                        return 0
+            ajj = temp.matrix[j][j]
+            if (j == 0):
+                d = 1
+            else:
+                d = temp.matrix[j - 1][j - 1]
+                if(d == 0):
+                    return temp.mod()
             while i <= size - 1:
-                ajj = temp.matrix[j][j]
                 aij = temp.matrix[i][j]
-                for t in range(size):
-                    temp.matrix[i][t] = (ajj*temp.matrix[i][t] - aij*temp.matrix[j][t])
+                t = j
+                while t <= size-1:
+                    temp.matrix[i][t] = (ajj*temp.matrix[i][t] - aij*temp.matrix[j][t])//d
+                    t += 1
                 i += 1
-            j+=1
+            j += 1
             i = j+1
-        return temp.mod()
+        temp = temp.mod()
+        return temp.matrix[size-1][size-1]
+
 
 # Special Linear group
 class SL(GL):
@@ -216,7 +242,7 @@ class SL(GL):
             det = 0
             while(det != 1):
                 self.matrix = self.gen()
-                det = self.det()
+                det = self.det_bar()
         else:
             self.matrix = matrix
 
@@ -309,17 +335,3 @@ class Vect(object):
         for i in range(self.size):
             vector.append(random.randint(0, (self.modulo - 1)))
         return vector
-
-
-
-s = 4
-m = 5
-
-
-a = GL(s,m)
-
-print(a)
-print()
-d = a.dett()
-print(a.det())
-print(d)
