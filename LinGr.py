@@ -77,6 +77,7 @@ class GL(object):
                 self.matrix[i][j] %= self.modulo
         return self
 
+# Get maximum power of Cyclic group element
     def get_exp(self):
         i = 1
         temp = self
@@ -86,6 +87,7 @@ class GL(object):
             i += 1
         return i
 
+# Determimant compute by using Laplace Expansion
     def det(self):
         size = self.size
         if size == 1:
@@ -105,6 +107,7 @@ class GL(object):
             del minor[t][j]
         return GL(len(minor), self.modulo, minor)
 
+# Transpose matrix
     def trans(self):
         size = self.size
         tr = []
@@ -112,6 +115,7 @@ class GL(object):
             tr.append([self.matrix[j][i] for j in range(size)])
         return GL(len(tr), self.modulo, tr)
 
+# Adjugate matrix
     def adj(self):
         adj = []
         size = self.size
@@ -123,6 +127,7 @@ class GL(object):
                 adj[i][j] = ((-1) ** (i + j)) * minor.det_bar()
         return GL(self.size, self.modulo, adj).mod()
 
+# Multiplication matrix by number
     def muln(self, n):
         matrix = copy.deepcopy(self.matrix)
         size = self.size
@@ -131,6 +136,7 @@ class GL(object):
                 matrix[i][j] *= n
         return GL(self.size, self.modulo, matrix).mod()
 
+# Inverse of a matrix
     def inv(self):
         det = self.det_bar()
         inv = mulinv(det, self.modulo)
@@ -139,6 +145,7 @@ class GL(object):
         mul = trans.muln(inv)
         return mul.mod()
 
+# Identity matrix
     def one(self):
         matrix = []
         for i in range(self.size):
@@ -150,49 +157,6 @@ class GL(object):
                 else:
                     matrix[t][k] = 1
         return matrix
-
-    def gauss_tr(self):
-        triangle = copy.deepcopy(self)
-        size = self.size
-        j = 0
-        i = 1
-        while j <= size - 2:
-            while i <= size - 1:
-                if (triangle.matrix[j][j] == 0):
-                    k = j
-                    while k < size:
-                        if (triangle.matrix[k][j] != 0):
-                            triangle.matrix[k], triangle.matrix[j] = triangle.matrix[j], triangle.matrix[k]
-                            print(triangle)
-                            print()
-                            break
-                        k += 1
-                aij = triangle.matrix[i][j]
-                ajj = triangle.matrix[j][j]
-                if (ajj != 0):
-                    inv = mulinv(ajj, self.modulo)
-                    for t in range(size):
-                        triangle.matrix[i][t] = (triangle.matrix[i][t] - (aij * inv * triangle.matrix[j][t])) % self.modulo
-                i += 1
-            j += 1
-            i = j + 1
-        return triangle.mod()
-
-    def gauss_det(self):
-        if(self.size == 2):
-            mat = self.matrix
-            det = mat[0][0]*mat[1][1] - mat[0][1]*mat[1][0]
-            return det % self.modulo
-        if(self.size == 3):
-            mat = self.matrix
-            det = (mat[0][0] * mat[1][1] * mat[2][2]) + (mat[1][0] * mat[2][1] * mat[0][2]) + (mat[0][1] * mat[1][2] * mat[2][0]) - (mat[0][2] * mat[1][1] * mat[2][0]) - (mat[1][0] * mat[0][1] * mat[2][2]) - (mat[2][1] * mat[1][2] * mat[0][0])
-            return det % self.modulo
-        det = 1
-        triangle = self.gauss_tr()
-        size = triangle.size
-        for i in range(size):
-            det *= triangle.matrix[i][i]
-        return det % self.modulo
 
 # Bareiss's algorhitm to calculate determinant
     def det_bar(self):
