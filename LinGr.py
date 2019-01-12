@@ -232,6 +232,7 @@ class GL(object):
         temp = temp.mod()
         return temp.matrix[size-1][size-1]
 
+
 # Special Linear group
 class SL(GL):
     def __init__(self, size, modulo, matrix = None):
@@ -283,7 +284,7 @@ class CG(GL):
         if(st == None):
             st_t = random.randint(1, 1000)
             temp = (other ** st_t).matrix
-            while(temp == one.matrix):
+            while(temp == one):
                 st_t = random.randint(1, 1000)
                 temp = (other ** st_t).matrix
             self.matrix = temp
