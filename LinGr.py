@@ -162,6 +162,10 @@ class GL(object):
     def det_bar(self):
         temp = copy.deepcopy(self)
         size = self.size
+        if(self.size == 2):
+            return (self.matrix[0][0]*self.matrix[1][1] - self.matrix[0][1]*self.matrix[1][0]) % self.modulo
+        if (self.size == 3):
+            return (self.matrix[0][0]*self.matrix[1][1]*self.matrix[2][2] + self.matrix[0][1]*self.matrix[1][2]*self.matrix[2][0] + self.matrix[1][0]*self.matrix[2][1]*self.matrix[0][2] - self.matrix[0][2]*self.matrix[1][1]*self.matrix[2][0] - self.matrix[0][1]*self.matrix[2][2]*self.matrix[1][0] - self.matrix[0][0]*self.matrix[1][2]*self.matrix[2][1]) % self.modulo
         j = 0
         i = 1
         while j <= size - 2:
