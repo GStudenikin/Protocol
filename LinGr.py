@@ -65,6 +65,7 @@ class GL(object):
             i += 1
         return res
 
+# Generation of matrix
     def gen(self):
         matrix = []
         for i in range(self.size):
@@ -81,7 +82,7 @@ class GL(object):
     def get_exp(self):
         i = 1
         temp = self
-        one = [[1,0,0],[0,1,0],[0,0,1]]
+        one = self.one()
         while temp.matrix != one:
             temp *= self
             i += 1
