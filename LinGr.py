@@ -36,7 +36,7 @@ class GL(object):
     def __mul__(self, other):
         size = self.size
         res = []
-        if(isinstance(other, GL)):
+        if(isinstance(other, GL) or isinstance(other, GL)):
             for t in range(size):
                 res.append([])
             temp = 0
@@ -218,6 +218,32 @@ class SL(GL):
 
 # Diagonal subgroup
 class Diag(GL):
+    def __mul__(self, other):
+        size = self.size
+        res = []
+        if(isinstance(other, Diag)):
+            res = copy.deepcopy(self.matrix)
+            for i in range(size):
+                res[i][i] *= other.matrix[i][i]
+            return Diag(size, self.modulo, res).mod()
+        elif(isinstance(other, Vect)):
+            res = copy.deepcopy(other.vect)
+            for i in range(size):
+                res[i] *= self.matrix[i][i]
+                res[i] %= self.modulo
+            return Vect(self.size, self.modulo, res)
+        elif (isinstance(other, GL)):
+            for t in range(size):
+                res.append([])
+            temp = 0
+            for i in range(size):
+                for j in range(size):
+                    for k in range(size):
+                        temp += self.matrix[i][k] * other.matrix[k][j]
+                    res[i].append(temp)
+                    temp = 0
+            return GL(size, self.modulo, res).mod()
+
     def gen(self):
         matrix = []
         for i in range(self.size):
@@ -253,9 +279,6 @@ class CG(GL):
         if(st == None):
             st_t = random.randint(1, 1000)
             temp = (other ** st_t).matrix
-            while(temp == one):
-                st_t = random.randint(1, 1000)
-                temp = (other ** st_t).matrix
             self.matrix = temp
             self.st = st_t
         else:
