@@ -65,6 +65,14 @@ class GL(object):
             i += 1
         return res
 
+    def pow(self, st):
+        if(st == 0):
+            return GL(self.size, self.modulo, self.one())
+        if(st % 2 == 1):
+            return GL(self.size, self.modulo, (self*self.pow(st-1)).matrix)
+        d = GL(self.size, self.modulo, self.pow(st//2).matrix)
+        return (d*d).mod()
+
 # Generation of matrix
     def gen(self):
         matrix = []
