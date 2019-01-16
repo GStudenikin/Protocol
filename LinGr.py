@@ -283,7 +283,6 @@ class CG(GL):
     def __init__(self, other, st = None):
         self.size = other.size
         self.modulo = other.modulo
-        one = self.one()
         if(st == None):
             st_t = random.randint(1, 1000)
             temp = (other ** st_t).matrix
