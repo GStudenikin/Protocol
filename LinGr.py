@@ -17,6 +17,7 @@ def mulinv(b, n):
         return x % n
 
 
+
 # Linear group
 class GL(object):
     def __init__(self, size, modulo, matrix = None):
@@ -292,6 +293,9 @@ class CG(GL):
             self.matrix = (other ** st).matrix
             self.st = st
 
+class GF(object):
+    def __init__(self):
+        self.modulo = modulo
 
 # Vector
 class Vect(object):
@@ -339,3 +343,7 @@ class Vect(object):
         for i in range(self.size):
             vector.append(random.randint(0, (self.modulo - 1)))
         return vector
+
+m = 2
+st = 2
+pol = [1,1,1]
