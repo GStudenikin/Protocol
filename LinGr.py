@@ -293,9 +293,6 @@ class CG(GL):
             self.matrix = (other ** st).matrix
             self.st = st
 
-class GF(object):
-    def __init__(self):
-        self.modulo = modulo
 
 # Vector
 class Vect(object):
@@ -344,28 +341,167 @@ class Vect(object):
             vector.append(random.randint(0, (self.modulo - 1)))
         return vector
 
-m = 2
-st = 2
-pol = [[0,0,0],[0,0,1],[0,1,0],[0,1,1],[1,0,0],[1,0,1],[1,1,0],[1,1,1]]
-pol2 = [0,-1,1]
 
-def summa(a,b):
+# Galois field constructor
+class GFcons(object):
+    def __init__(self, prime, n, vect = None):
+        self.prime = prime
+        self.n = n
+        self.vect = vect
+
+    def __add__(self, other):
+        res = []
+        for i in range(len(self.vect)):
+            res.append(self.vect[i] + other.vect[i])
+        return GF(self.prime, self.n, res) % self.prime
+
+    def __sub__(self,other):
+        res = []
+        for i in range(len(self.vect)):
+            res.append(self.vect[i] - other.vect[i])
+        return GF(self.prime, self.n, res) % self.prime
+
+    def __str__(self):
+        return '[' + ', '.join(str(e) for e in self.vect) + ']'
+
+    def __mod__(self, other):
+            res = []
+            for i in range(len(self.vect)):
+                res.append(self.vect[i] % other)
+            return GF(self.prime,self.n,res)
+
+    def __len__(self):
+        return len(self.vect)
+
+    def __getitem__(self, item):
+        return self.vect[item]
+
+    def __mul__(self, other):
+        zero = self.zero()
+        if ((self.vect == zero) or (other.vect == zero)):
+            return GF(self.prime, self.n, zero)
+        temp = []
+        sres = len(self.vect) + len(other.vect) - 1
+        for i in range(len(self.vect)):
+            temp.append(other.muln(self.vect[i]).vect)
+            for j in range(sres - len(self.vect) - i):
+                temp[i].append(0)
+            if (i > 0):
+                for t in range(sres - len(temp[i])):
+                    temp[i].insert(0, 0)
+        res = []
+        for i in range(sres):
+            res.append(0)
+        for j in range(len(temp)):
+            res = (GF(self.prime,self.n,res) + GF(self.prime,self.n,temp[j]))
+        temp = copy.deepcopy(res.vect)
+        while(temp[0] == 0):
+            del(temp[0])
+        return GF(self.prime, self.n, temp)
+
+    def zero(self):
+        res = []
+        for i in range(len(self.vect)):
+            res.append(0)
+        return res
+
+    def one(self):
+        res = self.zero()
+        res[-1] += 1
+        return res
+
+    def muln(self, number):
+        zero = self.zero()
+        if((self.vect == zero) or (number == 0)):
+            return GF(self.prime, self.n, zero)
+        res = copy.deepcopy(self)
+        for i in range(len(res.vect)):
+            res.vect[i] *= number
+        return GF(self.prime, self.n, res) % self.prime
+
+    def modirp(self, other):
+        zero = self.zero()
+        if (self.vect == zero):
+            return GF(self.prime, self.n, zero)
+        av = copy.deepcopy(self)
+        bv = GF(self.prime,self.n,copy.deepcopy(other))
+        while (av.vect == 0):
+            del (av.vect[0])
+        while (bv.vect[0] == 0):
+            del (bv.vect[0])
+        if (len(bv.vect) > len(av.vect)):
+            temp = av.vect
+            while (len(temp) < len(bv.vect)):
+                temp.insert(0, 0)
+            return GF(self.prime,self.n,temp)
+        elif (len(bv.vect) == len(av.vect)):
+            return av - bv
+        elif len(bv.vect) < len(av.vect):
+            while len(bv.vect) < len(av.vect):
+                reslen = len(av.vect) - len(bv.vect)
+                di = [1]
+                temp = copy.deepcopy(bv)
+                for i in range(reslen):
+                    di.append(0)
+                    temp.vect.append(0)
+                av = av - temp
+                temp = copy.deepcopy(av.vect)
+                while (temp[0] == 0):
+                    del(temp[0])
+                    av = GF(self.prime,self.n,temp)
+                if (len(bv.vect) == len(av.vect)):
+                    av = av - bv
+                    while (av.vect[0] == 0):
+                        del (av.vect[0])
+                temp = av.vect
+                while (len(temp) < len(other)):
+                    temp.insert(0,0)
+        return GF(self.prime,self.n,temp)
+
+    def inv(self, mul_tab):
+        elem = gen_elems(self.prime, self.n)
+        ind = elem.index(self.vect)
+        one = self.one()
+        one_ind = mul_tab[ind].index(one)
+        return elem[one_ind]
+
+
+def gen_elems(p, n):
     res = []
-    for i in range(len(a)):
-        res.append(a[i] + b[i])
+    size = p**n
+    for i in range(size):
+        elem = []
+        while(i > 0):
+            elem.append(i%p)
+            i = i//p
+        elem = elem[::-1]
+        if(len(elem) < n):
+            for i in range((n + 1) - len(elem)):
+                elem.insert(0,0)
+        else:
+            elem.insert(0, 0)
+        res.append(elem)
     return res
 
-def modul(a,n):
+def get_sum_table(p,n):
+    size = p**n
+    elems = gen_elems(p,n)
     res = []
-    for i in range(len(a)):
-        res.append(a[i] % n)
+    for i in range(size):
+        res.append([])
+    for i in range(size):
+        for j in range(size):
+            res[i].append((GF(p,n,elems[i])+ GF(p,n,elems[j])).vect)
     return res
 
-a = 6
-while(a > 0):
-    print(a%2)
-    a = a//2
-
-
-
-
+def get_mul_table(p,n,irp):
+    size = p**n
+    elems = gen_elems(p,n)
+    res = []
+    for i in range(size):
+        res.append([])
+    for i in range(size):
+        for j in range(size):
+            pr = GF(p, n, elems[i]) * GF(p, n, elems[j])
+            res[i].append(pr.modirp(irp).vect)
+    return res
