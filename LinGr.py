@@ -346,4 +346,26 @@ class Vect(object):
 
 m = 2
 st = 2
-pol = [1,1,1]
+pol = [[0,0,0],[0,0,1],[0,1,0],[0,1,1],[1,0,0],[1,0,1],[1,1,0],[1,1,1]]
+pol2 = [0,-1,1]
+
+def summa(a,b):
+    res = []
+    for i in range(len(a)):
+        res.append(a[i] + b[i])
+    return res
+
+def modul(a,n):
+    res = []
+    for i in range(len(a)):
+        res.append(a[i] % n)
+    return res
+
+a = 6
+while(a > 0):
+    print(a%2)
+    a = a//2
+
+
+
+
