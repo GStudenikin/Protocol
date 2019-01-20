@@ -343,7 +343,7 @@ class Vect(object):
 
 
 # Galois field constructor
-class GFcons(object):
+class GF_cons(object):
     def __init__(self, prime, n, vect = None):
         self.prime = prime
         self.n = n
@@ -353,13 +353,13 @@ class GFcons(object):
         res = []
         for i in range(len(self.vect)):
             res.append(self.vect[i] + other.vect[i])
-        return GF(self.prime, self.n, res) % self.prime
+        return GF_cons(self.prime, self.n, res) % self.prime
 
     def __sub__(self,other):
         res = []
         for i in range(len(self.vect)):
             res.append(self.vect[i] - other.vect[i])
-        return GF(self.prime, self.n, res) % self.prime
+        return GF_cons(self.prime, self.n, res) % self.prime
 
     def __str__(self):
         return '[' + ', '.join(str(e) for e in self.vect) + ']'
@@ -368,7 +368,7 @@ class GFcons(object):
             res = []
             for i in range(len(self.vect)):
                 res.append(self.vect[i] % other)
-            return GF(self.prime,self.n,res)
+            return GF_cons(self.prime, self.n, res)
 
     def __len__(self):
         return len(self.vect)
@@ -379,7 +379,7 @@ class GFcons(object):
     def __mul__(self, other):
         zero = self.zero()
         if ((self.vect == zero) or (other.vect == zero)):
-            return GF(self.prime, self.n, zero)
+            return GF_cons(self.prime, self.n, zero)
         temp = []
         sres = len(self.vect) + len(other.vect) - 1
         for i in range(len(self.vect)):
@@ -393,11 +393,11 @@ class GFcons(object):
         for i in range(sres):
             res.append(0)
         for j in range(len(temp)):
-            res = (GF(self.prime,self.n,res) + GF(self.prime,self.n,temp[j]))
+            res = (GF_cons(self.prime, self.n, res) + GF_cons(self.prime, self.n, temp[j]))
         temp = copy.deepcopy(res.vect)
         while(temp[0] == 0):
             del(temp[0])
-        return GF(self.prime, self.n, temp)
+        return GF_cons(self.prime, self.n, temp)
 
     def zero(self):
         res = []
@@ -413,18 +413,18 @@ class GFcons(object):
     def muln(self, number):
         zero = self.zero()
         if((self.vect == zero) or (number == 0)):
-            return GF(self.prime, self.n, zero)
+            return GF_cons(self.prime, self.n, zero)
         res = copy.deepcopy(self)
         for i in range(len(res.vect)):
             res.vect[i] *= number
-        return GF(self.prime, self.n, res) % self.prime
+        return GF_cons(self.prime, self.n, res) % self.prime
 
     def modirp(self, other):
         zero = self.zero()
         if (self.vect == zero):
-            return GF(self.prime, self.n, zero)
+            return GF_cons(self.prime, self.n, zero)
         av = copy.deepcopy(self)
-        bv = GF(self.prime,self.n,copy.deepcopy(other))
+        bv = GF_cons(self.prime, self.n, copy.deepcopy(other))
         while (av.vect == 0):
             del (av.vect[0])
         while (bv.vect[0] == 0):
@@ -433,7 +433,7 @@ class GFcons(object):
             temp = av.vect
             while (len(temp) < len(bv.vect)):
                 temp.insert(0, 0)
-            return GF(self.prime,self.n,temp)
+            return GF_cons(self.prime, self.n, temp)
         elif (len(bv.vect) == len(av.vect)):
             return av - bv
         elif len(bv.vect) < len(av.vect):
@@ -448,7 +448,7 @@ class GFcons(object):
                 temp = copy.deepcopy(av.vect)
                 while (temp[0] == 0):
                     del(temp[0])
-                    av = GF(self.prime,self.n,temp)
+                    av = GF_cons(self.prime, self.n, temp)
                 if (len(bv.vect) == len(av.vect)):
                     av = av - bv
                     while (av.vect[0] == 0):
@@ -456,7 +456,7 @@ class GFcons(object):
                 temp = av.vect
                 while (len(temp) < len(other)):
                     temp.insert(0,0)
-        return GF(self.prime,self.n,temp)
+        return GF_cons(self.prime, self.n, temp)
 
     def inv(self, mul_tab):
         elem = gen_elems(self.prime, self.n)
@@ -491,7 +491,7 @@ def get_sum_table(p,n):
         res.append([])
     for i in range(size):
         for j in range(size):
-            res[i].append((GF(p,n,elems[i])+ GF(p,n,elems[j])).vect)
+            res[i].append((GF_cons(p, n, elems[i]) + GF_cons(p, n, elems[j])).vect)
     return res
 
 def get_mul_table(p,n,irp):
@@ -502,6 +502,6 @@ def get_mul_table(p,n,irp):
         res.append([])
     for i in range(size):
         for j in range(size):
-            pr = GF(p, n, elems[i]) * GF(p, n, elems[j])
+            pr = GF_cons(p, n, elems[i]) * GF_cons(p, n, elems[j])
             res[i].append(pr.modirp(irp).vect)
     return res
