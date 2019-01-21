@@ -3,9 +3,10 @@ import LinGr
 
 s = 5
 m = 11
+n = 1
 c = LinGr.CG(LinGr.GL(s,m))
-parS = Hurley.initSender(s, m, c)
-parR = Hurley.initReciever(s, m, c)
+parS = Hurley.initSender(s, m, n, c)
+parR = Hurley.initReciever(s, m, n, c)
 
 xv = [3,4,1,2,8]
 x = LinGr.Vect(s, m, xv)

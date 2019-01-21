@@ -1,32 +1,43 @@
 import LinGr
+import GLn
 
 # initialization Reciever's parameters
 # return params(y, B, B1, B2)
 # c - generator of cyclic group
-def initReciever(s, m, c = None):
+def initReciever(s, p, n, c = None, elems = None, mat_mul = None, mat_sum = None):
     params = []
-    if(c == None):
-        params.append(LinGr.Diag(s, m))
-        params.append(LinGr.Diag(s, m))
-        params.append(LinGr.Diag(s, m))
+    if(n == 1):
+        params.append(LinGr.Vect(s, p))
+        if(c == None):
+            params.append(LinGr.Diag(s, p))
+            params.append(LinGr.Diag(s, p))
+            params.append(LinGr.Diag(s, p))
+        else:
+            params.append(LinGr.CG(c))
+            params.append(LinGr.CG(c))
+            params.append(LinGr.CG(c))
     else:
-        params.append(LinGr.CG(c))
-        params.append(LinGr.CG(c))
-        params.append(LinGr.CG(c))
-    params.append(LinGr.Vect(s, m))
+        params.append(GLn.Vect(s, p, n, c, elems, mat_mul, mat_sum))
+        params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
+        params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
+        params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
     return params
 
 # initialization Sender's parameters
 # return params(A, A1)
 # c - generator of cyclic group
-def initSender(s, m, c = None):
+def initSender(s, p, n, c = None, elems = None, mat_mul = None, mat_sum = None):
     params = []
-    if(c == None):
-        params.append(LinGr.Diag(s, m))
-        params.append(LinGr.Diag(s, m))
+    if(n == 1):
+        if(c == None):
+            params.append(LinGr.Diag(s, p))
+            params.append(LinGr.Diag(s, p))
+        else:
+            params.append(LinGr.CG(c))
+            params.append(LinGr.CG(c))
     else:
-        params.append(LinGr.CG(c))
-        params.append(LinGr.CG(c))
+        params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
+        params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
     return params
 
 # 1st step of reciever
@@ -65,7 +76,9 @@ def rec2(params, sMes):
 def sen2(params, rMes):
     ai = params[0].inv()
     a1i = params[1].inv()
-    mes = rMes[0]*ai - rMes[1]*a1i
+    mes1 = rMes[0]*ai
+    mes2 = rMes[1]*a1i
+    mes = mes1 - mes2
     return mes
 
 # decrypt message
@@ -74,9 +87,16 @@ def sen2(params, rMes):
 # return decrypted message
 def getMes(params, sMes):
     b1i = params[2].inv()
-    ost = params[0] * params[3] * b1i
+    ost = params[0] * params[3]
+    ost *= b1i
     res = sMes * b1i
-    return res + ost
+    res += ost
+    if(isinstance(res, GLn.Vect)):
+        vec = []
+        for i in range(res.size):
+            vec.append(res.vect[i].elnum)
+        return vec
+    return res
 
 def vstr(Vect):
     strm = "|".join([str(elem) for elem in Vect.vect])
