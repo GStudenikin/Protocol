@@ -231,15 +231,37 @@ class GL_f(object):
         res = []
         for t in range(size):
             res.append([])
-        temp = GF(p, n, self.irp, 0, self.elems, self.mat_mul, self.mat_sum)
+        temp = GF(self.prime, self.n, self.irp, 0, self.elems, self.mat_mul, self.mat_sum)
         for i in range(size):
             for j in range(size):
                 for k in range(size):
                     ad = self.matrix[i][k] * other.matrix[k][j]
                     temp += ad
                 res[i].append(temp.elnum)
-                temp = GF(p, n, self.irp, 0, self.elems, self.mat_mul, self.mat_sum)
+                temp = GF(self.prime, self.n, self.irp, 0, self.elems, self.mat_mul, self.mat_sum)
         return GL_f(self.prime, self.n, self.irp, self.size, self.elems, self.mat_mul, self.mat_sum, res)
+
+    def __pow__(self, other):
+        res = self
+        i = 1
+        while i < other:
+            res *= self
+            i += 1
+        return res
+
+    def pow(self, st):
+        st = str(bin(st))[2::]
+        if (st[-1] == str(0)):
+            z = self.one()
+        if (st[-1] == str(1)):
+            z = copy.deepcopy(self)
+        st = st[:-1:]
+        q = copy.deepcopy(self)
+        for i in range(len(st)):
+            q *= q
+            if (st[len(st) - 1 - i] == str(1)):
+                z *= q
+        return z
 
     def gen(self):
         res = []
@@ -338,6 +360,19 @@ class GL_f(object):
                 res[i].append(matrix[i][j].elnum)
         return GL_f(self.prime, self.n, self.irp, self.size, self.elems, self.mat_mul, self.mat_sum, res)
 
+    def one(self):
+        matrix = []
+        for i in range(self.size):
+            matrix.append([])
+        for t in range(self.size):
+            for k in range(self.size):
+                if t!= k:
+                    matrix[t].append(0)
+                else:
+                    matrix[t].append(1)
+        return GL_f(self.prime, self.n, self.irp, self.size, self.elems, self.mat_mul, self.mat_sum, matrix)
+
+
 class Diag(GL_f):
     def __mul__(self, other):
         size = self.size
@@ -377,6 +412,25 @@ class Diag(GL_f):
         for i in range(self.size):
             res.matrix[i][i] = res.matrix[i][i].inv()
         return res
+
+
+class CG(GL_f):
+    def __init__(self, other, st = None):
+        self.prime = other.prime
+        self.n = other.n
+        self.irp = other.irp
+        self.size = other.size
+        self.elems = other.elems
+        self.mat_mul = other.mat_mul
+        self.mat_sum = other.mat_sum
+        if(st == None):
+            st_t = random.randint(1, 1000)
+            temp = (other.pow(st_t)).matrix
+            self.matrix = temp
+            self.st = st_t
+        else:
+            self.matrix = (other.pow(st)).matrix
+            self.st = st
 
 class Vect(object):
     def __init__(self, size, prime, n, irp, elems, mat_mul, mat_sum, vect = None):
