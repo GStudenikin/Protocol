@@ -4,7 +4,7 @@ import GLn
 # initialization Reciever's parameters
 # return params(y, B, B1, B2)
 # c - generator of cyclic group
-def initReciever(s, p, n, c = None, elems = None, mat_mul = None, mat_sum = None):
+def initReciever(s, p, n, c = None, elems = None, mat_mul = None, mat_sum = None, cyclic = None):
     params = []
     if(n == 1):
         params.append(LinGr.Vect(s, p))
@@ -17,16 +17,22 @@ def initReciever(s, p, n, c = None, elems = None, mat_mul = None, mat_sum = None
             params.append(LinGr.CG(c))
             params.append(LinGr.CG(c))
     else:
-        params.append(GLn.Vect(s, p, n, c, elems, mat_mul, mat_sum))
-        params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
-        params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
-        params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
+        if(cyclic == None):
+            params.append(GLn.Vect(s, p, n, c, elems, mat_mul, mat_sum))
+            params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
+            params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
+            params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
+        else:
+            params.append(GLn.Vect(s, p, n, c, elems, mat_mul, mat_sum))
+            params.append(GLn.CG(cyclic))
+            params.append(GLn.CG(cyclic))
+            params.append(GLn.CG(cyclic))
     return params
 
 # initialization Sender's parameters
 # return params(A, A1)
 # c - generator of cyclic group
-def initSender(s, p, n, c = None, elems = None, mat_mul = None, mat_sum = None):
+def initSender(s, p, n, c = None, elems = None, mat_mul = None, mat_sum = None, cyclic = None):
     params = []
     if(n == 1):
         if(c == None):
@@ -36,8 +42,12 @@ def initSender(s, p, n, c = None, elems = None, mat_mul = None, mat_sum = None):
             params.append(LinGr.CG(c))
             params.append(LinGr.CG(c))
     else:
-        params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
-        params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
+        if (cyclic == None):
+            params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
+            params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
+        else:
+            params.append(GLn.CG(cyclic))
+            params.append(GLn.CG(cyclic))
     return params
 
 # 1st step of reciever

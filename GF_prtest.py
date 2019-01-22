@@ -2,20 +2,21 @@ import Hurley
 import LinGr
 import GLn
 
-s = 7
-p = 5
+s = 3
+p = 2
 n = 2
 
-irp = [1,1,2]
+irp = [1,1,1]
 elems = GLn.gen_elems(p,n)
 mat_mul = GLn.get_mul_table(p,n,irp)
 mat_sum = GLn.get_sum_table(p,n)
 
+c = GLn.GL_f(p,n,irp,s,elems,mat_mul,mat_sum)
 # init
-parS = Hurley.initSender(s, p, n, irp, elems, mat_mul, mat_sum)
-parR = Hurley.initReciever(s, p, n, irp, elems, mat_mul, mat_sum)
+parS = Hurley.initSender(s, p, n, irp, elems, mat_mul, mat_sum, c)
+parR = Hurley.initReciever(s, p, n, irp, elems, mat_mul, mat_sum, c)
 
-xv = [18,17,16,15,1,8,9]
+xv = [1,2,3]
 x = GLn.Vect(s, p, n, irp, elems, mat_mul, mat_sum, xv)
 #
 
