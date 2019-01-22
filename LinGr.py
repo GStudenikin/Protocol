@@ -67,12 +67,19 @@ class GL(object):
         return res
 
     def pow(self, st):
-        if(st == 0):
-            return GL(self.size, self.modulo, self.one())
-        if(st % 2 == 1):
-            return GL(self.size, self.modulo, (self*self.pow(st-1)).matrix)
-        d = GL(self.size, self.modulo, self.pow(st//2).matrix)
-        return (d*d).mod()
+        st = str(bin(st))[2::]
+        if (st[-1] == str(0)):
+            z = GL(self.size, self.modulo, self.one())
+        if (st[-1] == str(1)):
+            z = copy.deepcopy(self)
+        st = st[:-1:]
+        q = copy.deepcopy(self)
+        for i in range(len(st)):
+            q *= q
+            if (st[len(st) - 1 - i] == str(1)):
+                z *= q
+                z.mod()
+        return z
 
 # Generation of matrix
     def gen(self):
@@ -286,11 +293,11 @@ class CG(GL):
         self.modulo = other.modulo
         if(st == None):
             st_t = random.randint(1, 1000)
-            temp = (other ** st_t).matrix
+            temp = (other.pow(st_t)).matrix
             self.matrix = temp
             self.st = st_t
         else:
-            self.matrix = (other ** st).matrix
+            self.matrix = (other.pow(st)).matrix
             self.st = st
 
 
