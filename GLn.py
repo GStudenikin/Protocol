@@ -424,7 +424,7 @@ class CG(GL_f):
         self.mat_mul = other.mat_mul
         self.mat_sum = other.mat_sum
         if(st == None):
-            st_t = random.randint(1, 1000)
+            st_t = random.randint(1, 100)
             temp = (other.pow(st_t)).matrix
             self.matrix = temp
             self.st = st_t
