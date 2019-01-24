@@ -144,6 +144,12 @@ class GL(object):
                 adj[i][j] = ((-1) ** (i + j)) * minor.det_bar()
         return GL(self.size, self.modulo, adj).mod()
 
+    def conj(self, other):
+        other_i = other.inv()
+        res = other * self
+        res *= other_i
+        return res
+
 # Multiplication matrix by number
     def muln(self, n):
         matrix = copy.deepcopy(self.matrix)

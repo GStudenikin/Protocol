@@ -333,6 +333,12 @@ class GL_f(object):
                 adj[i][j] = minor.det().muln((-1) ** (i + j)).elnum
         return GL_f(self.prime, self.n, self.irp, self.size, self.elems, self.mat_mul, self.mat_sum, adj)
 
+    def conj(self, other):
+        other_i = other.inv()
+        res = other * self
+        res *= other_i
+        return res
+
     def minor(self, i, j):
         minor = copy.deepcopy(self.matrix)
         del minor[i]
@@ -431,6 +437,7 @@ class CG(GL_f):
         else:
             self.matrix = (other.pow(st)).matrix
             self.st = st
+
 
 class Vect(object):
     def __init__(self, size, prime, n, irp, elems, mat_mul, mat_sum, vect = None):
