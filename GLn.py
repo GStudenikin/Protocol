@@ -1,7 +1,7 @@
 import copy
 import random
 
-
+# Разность многочленов av и bv, представленных векторами координат
 def subv(av,bv):
     a = copy.deepcopy(av)
     b = copy.deepcopy(bv)
@@ -17,6 +17,7 @@ def subv(av,bv):
         res.append(a[i] - b[i])
     return res
 
+# Сумма многочленов av и bv, представленных векторами координат
 def sumv(av,bv):
     a = copy.deepcopy(av)
     b = copy.deepcopy(bv)
@@ -32,12 +33,14 @@ def sumv(av,bv):
         res.append(a[i] + b[i])
     return res
 
+# Умножение многочлена a, представленного вектором координат на число n
 def mulvn(a,n):
     res = []
     for i in range(len(a)):
         res.append(a[i] * n)
     return res
 
+# Находление остатка от деления многочлена av, на многочлен ab в поле порядка n
 def modv(av,bv,n):
     a = copy.deepcopy(av)
     b = copy.deepcopy(bv)
@@ -68,6 +71,7 @@ def onev(a):
     res[-1] += 1
     return res
 
+# Произведение векторов a, b
 def mulv(a,b):
     if (zerv(a) == a):
         return zerv(a)
@@ -94,12 +98,14 @@ def mulv(a,b):
         del (res[0])
     return res
 
+# Нахождение остатка от деления многочлена a на число n
 def vmodn(a,n):
     res = []
     for i in range(len(a)):
         res.append(a[i] % n)
     return res
 
+# Генерация массива элементов конечного поля порядка p^n
 def gen_elems(p, n):
     res = []
     size = p**n
@@ -117,6 +123,7 @@ def gen_elems(p, n):
         res.append(elem)
     return res
 
+# Генерация таблицы сложения элементов конечного поля порядка p^n
 def get_sum_table(p,n):
     size = p**n
     elems = gen_elems(p,n)
@@ -128,6 +135,7 @@ def get_sum_table(p,n):
             res[i].append(vmodn(sumv(elems[i],elems[j]),p))
     return res
 
+# Генерация таблицы умножения элементов конечного поля порядка p^n
 def get_mul_table(p,n,irp):
     size = p**n
     elems = gen_elems(p,n)
@@ -187,6 +195,7 @@ class GF(object):
     def __str__(self):
         return '[' + ', '.join(str(e) for e in self.elems[self.elnum]) + ']'
 
+# Нахождение обратного элемента поля
     def inv(self):
         ind = self.mat_mul[self.elnum].index(self.elems[1])
         return GF(self.prime, self.n, self.irp, ind, self.elems, self.mat_mul, self.mat_sum)
@@ -249,6 +258,7 @@ class GL_f(object):
             i += 1
         return res
 
+# Дихотомический алгоритм возведение в степень
     def pow(self, st):
         st = str(bin(st))[2::]
         if (st[-1] == str(0)):
@@ -263,6 +273,7 @@ class GL_f(object):
                 z *= q
         return z
 
+# Генерация элемента группы
     def gen(self):
         res = []
         p = self.prime
@@ -285,6 +296,7 @@ class GL_f(object):
                 res[i].append(self.matrix[i][j].elnum)
         return res
 
+# Определитель матрицы
     def det(self):
         size = self.size
         mat = copy.deepcopy(self)
@@ -300,6 +312,7 @@ class GL_f(object):
             signum *= -1
         return determinant
 
+# Обратный элемент группы
     def inv(self):
         det = self.det()
         det_i = det.inv()
@@ -308,6 +321,7 @@ class GL_f(object):
         mul = trans.mulv(det_i)
         return mul
 
+# Транспонирование матрицы
     def trans(self):
         size = self.size
         tr = []
@@ -321,7 +335,7 @@ class GL_f(object):
                 res[i].append(tr[i][j].elnum)
         return GL_f(self.prime, self.n, self.irp, self.size, self.elems, self.mat_mul, self.mat_sum, res)
 
-    # Adjugate matrix
+# Построение союзной матрицы
     def adj(self):
         adj = []
         size = self.size
@@ -333,6 +347,7 @@ class GL_f(object):
                 adj[i][j] = minor.det().muln((-1) ** (i + j)).elnum
         return GL_f(self.prime, self.n, self.irp, self.size, self.elems, self.mat_mul, self.mat_sum, adj)
 
+# Сопряжение элемента группы элементом other
     def conj(self, other):
         other_i = other.inv()
         res = other * self
@@ -352,6 +367,7 @@ class GL_f(object):
                 res[i].append(minor[i][j].elnum)
         return GL_f(self.prime, self.n, self.irp, len(minor), self.elems, self.mat_mul, self.mat_sum, res)
 
+# Умножение элемента группы на элемент поля
     def mulv(self, other):
         matrix = copy.deepcopy(self.matrix)
         size = self.size
@@ -366,6 +382,7 @@ class GL_f(object):
                 res[i].append(matrix[i][j].elnum)
         return GL_f(self.prime, self.n, self.irp, self.size, self.elems, self.mat_mul, self.mat_sum, res)
 
+# Построение единичной матрицы
     def one(self):
         matrix = []
         for i in range(self.size):
@@ -387,6 +404,7 @@ class Diag(GL_f):
             res.matrix[i][i] *= other.matrix[i][i]
         return res
 
+# Генерация диагональной матрицы
     def gen(self):
         res = []
         p = self.prime
@@ -403,6 +421,7 @@ class Diag(GL_f):
                     res[i].append(GF(p, n, self.irp, 0, self.elems, self.mat_mul, self.mat_sum))
         return res
 
+# Определитель диагональной матрицы
     def det(self):
         size = self.size
         mat = copy.deepcopy(self)
@@ -413,6 +432,7 @@ class Diag(GL_f):
             determinant *= mat.matrix[j][j]
         return determinant
 
+# Построение обратного элемента группы
     def inv(self):
         res = copy.deepcopy(self)
         for i in range(self.size):
@@ -486,6 +506,7 @@ class Vect(object):
                 temp = GF(self.prime, self.n, self.irp, 0, self.elems, self.mat_mul, self.mat_sum)
             return Vect(self.size, self.prime, self.n, self.irp, self.elems, self.mat_mul, self.mat_sum, res)
 
+# Генерация вектора
     def gen(self):
         vector = []
         max = self.prime ** self.n
