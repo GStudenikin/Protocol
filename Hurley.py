@@ -4,14 +4,21 @@ import GLn
 # initialization Reciever's parameters
 # return params(y, B, B1, B2)
 # c - generator of cyclic group
-def initReciever(s, p, n, c = None, elems = None, mat_mul = None, mat_sum = None, cyclic = None):
+def initReciever(s, p, n, conjug, c = None, elems = None, mat_mul = None, mat_sum = None, cyclic = None):
     params = []
     if(n == 1):
         params.append(LinGr.Vect(s, p))
         if(c == None):
-            params.append(LinGr.Diag(s, p))
-            params.append(LinGr.Diag(s, p))
-            params.append(LinGr.Diag(s, p))
+            if(conjug != 0):
+                params.append(LinGr.Diag(s, p).conj(conjug))
+                params.append(LinGr.Diag(s, p).conj(conjug))
+                params.append(LinGr.Diag(s, p).conj(conjug))
+                params.append(conjug)
+                params.append(conjug.inv())
+            else:
+                params.append(LinGr.Diag(s, p))
+                params.append(LinGr.Diag(s, p))
+                params.append(LinGr.Diag(s, p))
         else:
             params.append(LinGr.CG(c))
             params.append(LinGr.CG(c))
@@ -19,9 +26,16 @@ def initReciever(s, p, n, c = None, elems = None, mat_mul = None, mat_sum = None
     else:
         if(cyclic == None):
             params.append(GLn.Vect(s, p, n, c, elems, mat_mul, mat_sum))
-            params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
-            params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
-            params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
+            if (conjug != 0):
+                params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum).conj(conjug))
+                params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum).conj(conjug))
+                params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum).conj(conjug))
+                params.append(conjug)
+                params.append(conjug.inv())
+            else:
+                params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
+                params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
+                params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
         else:
             params.append(GLn.Vect(s, p, n, c, elems, mat_mul, mat_sum))
             params.append(GLn.CG(cyclic))
@@ -32,19 +46,31 @@ def initReciever(s, p, n, c = None, elems = None, mat_mul = None, mat_sum = None
 # initialization Sender's parameters
 # return params(A, A1)
 # c - generator of cyclic group
-def initSender(s, p, n, c = None, elems = None, mat_mul = None, mat_sum = None, cyclic = None):
+def initSender(s, p, n, conjug, c = None, elems = None, mat_mul = None, mat_sum = None, cyclic = None):
     params = []
     if(n == 1):
         if(c == None):
-            params.append(LinGr.Diag(s, p))
-            params.append(LinGr.Diag(s, p))
+            if (conjug != 0):
+                params.append(LinGr.Diag(s, p).conj(conjug))
+                params.append(LinGr.Diag(s, p).conj(conjug))
+                params.append(conjug)
+                params.append(conjug.inv())
+            else:
+                params.append(LinGr.Diag(s, p))
+                params.append(LinGr.Diag(s, p))
         else:
             params.append(LinGr.CG(c))
             params.append(LinGr.CG(c))
     else:
         if (cyclic == None):
-            params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
-            params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
+            if(conjug != 0):
+                params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum).conj(conjug))
+                params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum).conj(conjug))
+                params.append(conjug)
+                params.append(conjug.inv())
+            else:
+                params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
+                params.append(GLn.Diag(p, n, c, s, elems, mat_mul, mat_sum))
         else:
             params.append(GLn.CG(cyclic))
             params.append(GLn.CG(cyclic))
@@ -74,7 +100,16 @@ def sen1(x, params, rMes):
 def rec2(params, sMes):
     mes = []
     mes.append(sMes[0]*params[2])
-    bi = params[1].inv()
+    if(len(params) == 6):
+        temp = params[5]*params[1]
+        temp = temp * params[4]
+        if(isinstance(temp, GLn.GL_f)):
+            d = GLn.Diag(temp.prime, temp.n, temp.irp, temp.size, temp.elems, temp.mat_mul, temp.mat_sum, temp.num_mat())
+        else:
+            d = LinGr.Diag(params[1].size, params[1].modulo, temp.matrix)
+        bi = d.inv().conj(params[4])
+    else:
+        bi = params[1].inv()
     mes.append(sMes[1]*bi)
     mes[1] *= params[3]
     return mes
@@ -84,8 +119,24 @@ def rec2(params, sMes):
 # rMes = (xAB1, yA1B2)
 # return mes = xB1 - yB2
 def sen2(params, rMes):
-    ai = params[0].inv()
-    a1i = params[1].inv()
+    if (len(params) == 4):
+        temp = params[3] * params[0]
+        temp = temp * params[2]
+        if (isinstance(temp, GLn.GL_f)):
+            d = GLn.Diag(temp.prime, temp.n, temp.irp, temp.size, temp.elems, temp.mat_mul, temp.mat_sum, temp.num_mat())
+        else:
+            d = LinGr.Diag(params[0].size, params[0].modulo, temp.matrix)
+        ai = d.inv().conj(params[2])
+        temp = params[3] * params[1]
+        temp = temp * params[2]
+        if (isinstance(temp, GLn.GL_f)):
+            d = GLn.Diag(temp.prime, temp.n, temp.irp, temp.size, temp.elems, temp.mat_mul, temp.mat_sum, temp.num_mat())
+        else:
+            d = LinGr.Diag(params[1].size, params[1].modulo, temp.matrix)
+        a1i = d.inv().conj(params[2])
+    else:
+        ai = params[0].inv()
+        a1i = params[1].inv()
     mes1 = rMes[0]*ai
     mes2 = rMes[1]*a1i
     mes = mes1 - mes2
@@ -96,7 +147,16 @@ def sen2(params, rMes):
 # sMes = xB1 - yB2
 # return decrypted message
 def getMes(params, sMes):
-    b1i = params[2].inv()
+    if (len(params) == 6):
+        temp = params[5] * params[2]
+        temp = temp * params[4]
+        if (isinstance(temp, GLn.GL_f)):
+            d = GLn.Diag(temp.prime, temp.n, temp.irp, temp.size, temp.elems, temp.mat_mul, temp.mat_sum, temp.num_mat())
+        else:
+            d = LinGr.Diag(params[2].size, params[2].modulo, temp.matrix)
+        b1i = d.inv().conj(params[4])
+    else:
+        b1i = params[2].inv()
     ost = params[0] * params[3]
     ost *= b1i
     res = sMes * b1i
