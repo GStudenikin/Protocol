@@ -298,7 +298,7 @@ class CG(GL):
         self.size = other.size
         self.modulo = other.modulo
         if(st == None):
-            st_t = random.randint(1, 1000)
+            st_t = random.randint(1, 100)
             temp = (other.pow(st_t)).matrix
             self.matrix = temp
             self.st = st_t
