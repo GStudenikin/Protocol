@@ -1,6 +1,8 @@
 import Hurley
 import LinGr
 import timeit
+import make_tab
+import GLn
 
 def mean(time):
     s = 0
@@ -8,32 +10,29 @@ def mean(time):
         s += time[i]
     return s / len(time)
 
-
-s = 10
-m = 151
+p = 251
 n = 1
-
-f = open('D:\pyproject\GitHub\Protocol\experiments\prot_final_diag.txt', 'w')
+f = open('D:\PyProjects\Protocol\experiments\prot_final_CG_pr.txt', 'w')
+f.write(str(p)+"\n")
 f.close()
-
-
-while s < 100000:
+s = 30
+while(s < 10000):
     time = []
-    f = open('D:\pyproject\GitHub\Protocol\experiments\prot_final_diag.txt', 'a')
-    for i in range(10):
+    f = open('D:\PyProjects\Protocol\experiments\prot_final_CG_pr.txt', 'a')
+    for i in range(1):
         a = timeit.default_timer()
-        parS = Hurley.initSender(s, m, n)
-        parR = Hurley.initReciever(s, m, n)
-        x = LinGr.Vect(s, m)
+        c = LinGr.GL(s,p)
+        parS = Hurley.initSender(s, p, n, 0, c)
+        parR = Hurley.initReciever(s, p, n, 0, c)
+        x = LinGr.Vect(s,p)
 
         mesR1 = Hurley.rec1(parR)
         mesS1 = Hurley.sen1(x, parS, mesR1)
         mesR2 = Hurley.rec2(parR, mesS1)
         mesS2 = Hurley.sen2(parS, mesR2)
         res = Hurley.getMes(parR, mesS2)
-        time.append(timeit.default_timer() - a)
-    f.write(str(s) + " " + str(mean(time)) + "\n")
+        time = timeit.default_timer() - a
+    f.write('{:>5}'.format(str(s)) +  " " + str(time) + "\n")
     f.close()
+    s+=10
     print(s)
-    s += 10
-

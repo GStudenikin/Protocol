@@ -2,20 +2,21 @@ import LinGr
 import timeit
 import Hurley
 import GLn
+import make_tab
 
-primes = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,389,397,401,409,419,421,431,433,439,443,449,457,461,463,467,479,487,491,499]
+primes = [2,3,5,7,11,13,17,19,23]
 
 irps = [[[],[],[1,1,1],[1,1,0,1],[1,1,0,0,1],[1,0,1,0,0,1],[1,1,0,0,0,0,1],[1,0,0,0,0,0,1,1],[1,1,1,0,0,0,0,1,1],[1,0,0,0,1,0,0,0,0,1],[1,0,0,1,0,0,0,0,0,0,1]],
-       [[],[],[1,1,2],[1,2,0,1],[1,1,0,0,2],[1,1,0,1,0,1],[1,1,0,0,0,0,2],[1,1,0,1,0,0,0,1],[1,0,0,1,0,0,0,0,2],[1,0,1,0,1,0,0,0,0,1],[1,1,0,1,0,0,0,0,0,0,2]],
-       [[],[],[1,1,2],[1,1,0,2],[1,1,0,1,3],[1,0,0,1,0,2],[1,1,0,0,0,0,2],[1,1,0,0,0,0,0,2],[1,0,0,1,0,1,0,0,3],[1,0,1,1,0,0,0,0,0,3],[1,1,0,1,0,0,0,0,0,0,3]],
-       [[],[],[1,1,3],[1,1,1,2],[1,1,1,0,3],[1,1,0,0,0,4],[1,1,1,0,0,0,3],[1,0,1,0,0,0,0,4],[1,1,0,0,0,0,0,0,3],[1,1,0,0,0,0,1,0,0,2],[1,1,1,0,0,0,0,0,0,0,3]],
-       [[],[],[1,1,7],[1,1,0,5],[1,0,0,1,2],[1,0,1,1,0,9],[1,1,0,0,0,1,7],[1,1,0,0,0,0,0,5],[1,0,0,0,1,0,0,1,2]],
-       [[],[],[1,1,2],[1,1,0,7],[1,1,0,1,2],[1,0,1,0,1,11],[1,1,0,1,0,0,6],[1,0,0,1,0,0,0,6],[1,0,1,1,0,0,0,0,2]],
-       [[],[],[1,1,3],[1,0,1,14],[1,1,0,0,5],[1,1,0,0,0,14],[1,1,0,0,0,0,3],[1,0,0,0,1,0,0,14]],
-       [[],[],[1,1,2],[1,1,0,16],[1,1,0,0,2],[1,0,0,0,1,16],[1,0,0,0,0,1,3],[1,0,1,0,0,0,0,9]],
-       [[],[],[1,1,7],[1,1,0,16],[1,0,0,1,11],[1,0,0,0,18],[1,0,0,0,0,7]]]
+       [[],[],[1,1,2],[1,2,0,1],[1,1,0,0,2],[1,1,0,1,0,1],[1,1,0,0,0,0,2]],
+       [[],[],[1,1,2],[1,1,0,2],[1,1,0,1,3]],
+       [[],[],[1,1,3],[1,1,1,2]],
+       [[],[],[1,1,7],[1,1,0,5]],
+       [[],[],[1,1,2]],
+       [[],[],[1,1,3]],
+       [[],[],[1,1,2]],
+       [[],[],[1,1,7]]]
 
-
+par = [[2,2],[2,3],[3,2],[2,4],[5,2],[3,3],[2,5],[7,2],[2,6],[3,4],[11,2],[5,3],[2,7],[13,2],[3,5],[2,8],[17,2],[7,3],[19,2],[2,9],[23,2],[5,4],[3,6],[2,10]]
 
 def mean(time):
     s = 0
@@ -23,112 +24,12 @@ def mean(time):
         s += time[i]
     return s / len(time)
 
-def pow_test():
-    print("pow_test STARTED")
-    f = open('D:\pyproject\GitHub\Protocol\experiments\pow_time.txt', 'w')
-    f.close()
-    s = 3
-    p = 23
-    n = 1
-    f = open('D:\pyproject\GitHub\Protocol\experiments\pow_time.txt', 'a')
-    while(n < 1000):
-        time = []
-        for i in range(100):
-            el = LinGr.GL(s, p)
-            a = timeit.default_timer()
-            el**n
-            time.append(timeit.default_timer() - a)
-        f.write(str(n) + " " + str(mean(time)) + "\n")
-        if (n % 10 == 0):
-            print(n)
-            f.close()
-            f = open('D:\pyproject\GitHub\Protocol\experiments\pow_time.txt', 'a')
-        n += 1
-    print("pow_test FINISHED")
-    f.close()
-
-def dh_pow_test():
-    print("dh_pow_test STARTED")
-    f = open('D:\pyproject\GitHub\Protocol\experiments\dh_pow_time.txt', 'w')
-    f.close()
-    s = 3
-    p = 23
-    n = 1
-    f = open('D:\pyproject\GitHub\Protocol\experiments\dh_pow_time.txt', 'a')
-    while(n < 1000):
-        time = []
-        for i in range(100):
-            el = LinGr.GL(s, p)
-            a = timeit.default_timer()
-            el.pow(n)
-            time.append(timeit.default_timer() - a)
-        f.write(str(n) + " " + str(mean(time)) + "\n")
-        if (n % 10 == 0):
-            print(n)
-            f.close()
-            f = open('D:\pyproject\GitHub\Protocol\experiments\dh_pow_time.txt', 'a')
-        n += 1
-    print("dh_pow_test FINISHED")
-    f.close()
-
-def det_bar_test():
-    print("bar_test STARTED")
-    f = open('D:\pyproject\GitHub\Protocol\experiments\det_bar_time.txt', 'w')
-    f.close()
-    s = 1
-    m = 23
-    f = open('D:\pyproject\GitHub\Protocol\experiments\det_bar_time.txt', 'a')
-    while s < 200:
-        time = []
-        if(s > 100):
-            exps = 10
-        else:
-            exps = 100
-        for t in range(exps):
-            b = LinGr.GL(s,m)
-            a = timeit.default_timer()
-            b.det_bar()
-            time.append(timeit.default_timer()-a)
-        f.write(str(s) + " " + str(mean(time)) + "\n")
-        s += 1
-        if(s%10 == 0):
-            print(s)
-            f.close()
-            f = open('D:\pyproject\GitHub\Protocol\experiments\det_bar_time.txt', 'a')
-    print("bar_test FINISHED")
-    f.close()
-
-def det_test():
-    print("laplace test STARTED")
-    f = open('D:\pyproject\GitHub\Protocol\experiments\det_lap_time.txt', 'w')
-    f.close()
-    s = 1
-    m = 23
-    f = open('D:\pyproject\GitHub\Protocol\experiments\det_lap_time.txt', 'a')
-    while s <= 10:
-        time = []
-        if(s > 8):
-            exps = 10
-        else:
-            exps = 100
-        for t in range(exps):
-            b = LinGr.GL(s,m)
-            a = timeit.default_timer()
-            b.det()
-            time.append(timeit.default_timer()-a)
-        f.write(str(s) + " " + str(mean(time)) + "\n")
-        s += 1
-        print(s)
-        f.close()
-        f = open('D:\pyproject\GitHub\Protocol\experiments\det_bar_time.txt', 'a')
-    print("laplace test FINISHED")
-    f.close()
 
 def prot_test_diag_prime():
     print("protocol Diag test for primes STARTED")
-    f = open('D:\pyproject\GitHub\Protocol\experiments\prot_primes_diag.txt', 'w')
+    f = open('D:\PyProjects\Protocol\experiments\prot_primes_diag.txt', 'w')
     f.close()
-    f = open('D:\pyproject\GitHub\Protocol\experiments\prot_primes_diag.txt', 'a')
+    f = open('D:\PyProjects\Protocol\experiments\prot_primes_diag.txt', 'a')
     i = 1
     while i < len(primes):
         m = primes[i]
@@ -153,29 +54,30 @@ def prot_test_diag_prime():
                     res_t = mean(time)
                     f.write(str(m) + " " + str(s) + " " + str(res_t) + "\n")
                     f.close()
-                    f = open('D:\pyproject\GitHub\Protocol\experiments\prot_primes_diag.txt', 'a')
+                    f = open('D:\PyProjects\Protocol\experiments\prot_primes_diag.txt', 'a')
                     break
             res_t = mean(time)
             f.write(str(m) + " " + str(s) + " " + str(res_t) + "\n")
             if(res_t > 2):
                 f.close()
-                f = open('D:\pyproject\GitHub\Protocol\experiments\prot_primes_diag.txt', 'a')
+                f = open('D:\PyProjects\Protocol\experiments\prot_primes_diag.txt', 'a')
                 break
             if (s % 10 == 0):
                 print(s)
                 f.close()
-                f = open('D:\pyproject\GitHub\Protocol\experiments\prot_primes_diag.txt', 'a')
+                f = open('D:\PyProjects\Protocol\experiments\prot_primes_diag.txt', 'a')
             s+=1
         f.write("\n\n\n")
         i+=1
     f.close()
     print("protocol Diag test for primes FINISHED")
 
+
 def prot_test_cyclic_prime():
     print("protocol Cyclic test for primes STARTED")
-    f = open('D:\pyproject\GitHub\Protocol\experiments\prot_primes_cyc.txt', 'w')
+    f = open('D:\PyProjects\Protocol\experiments\prot_primes_cyc.txt', 'w')
     f.close()
-    f = open('D:\pyproject\GitHub\Protocol\experiments\prot_primes_cyc.txt', 'a')
+    f = open('D:\PyProjects\Protocol\experiments\prot_primes_cyc.txt', 'a')
     i = 1
     while i < len(primes):
         m = primes[i]
@@ -195,96 +97,86 @@ def prot_test_cyclic_prime():
                 mesR2 = Hurley.rec2(parR, mesS1)
                 mesS2 = Hurley.sen2(parS, mesR2)
                 res = Hurley.getMes(parR, mesS2)
-                time.append(timeit.default_timer() - a)
+                t = timeit.default_timer() - a
+                time.append(t)
+                if (t > 2):
+                    res_t = mean(time)
+                    f.write(str(m) + " " + str(s) + " " + str(res_t) + "\n")
+                    f = open('D:\PyProjects\Protocol\experiments\prot_primes_cyc.txt', 'a')
+                    break
             res_t = mean(time)
-            f.write(str(m) + " " + str(s) + " " + str(res_t) + "\n")
-            if(res_t > 2):
-                f.close()
-                f = open('D:\pyproject\GitHub\Protocol\experiments\prot_primes_cyc.txt', 'a')
+            if (res_t > 2):
+                res_t = mean(time)
+                f.write(str(m) + " " + str(s) + " " + str(res_t) + "\n")
+                f = open('D:\PyProjects\Protocol\experiments\prot_primes_cyc.txt', 'a')
                 break
+            f.write(str(m) + " " + str(s) + " " + str(res_t) + "\n")
             if (s % 10 == 0):
                 print(s)
                 f.close()
-                f = open('D:\pyproject\GitHub\Protocol\experiments\prot_primes_cyc.txt', 'a')
+                f = open('D:\PyProjects\Protocol\experiments\prot_primes_cyc.txt', 'a')
             s+=1
         f.write("\n\n\n")
         i+=1
     f.close()
     print("protocol Cyclic test for primes FINISHED")
 
-def prot_test_diag_GF():
-    print("protocol Diag test for GF STARTED")
-    f = open('D:\pyproject\GitHub\Protocol\experiments\prot_GF_diag.txt', 'w')
-    f.close()
-    f = open('D:\pyproject\GitHub\Protocol\experiments\prot_GF_diag.txt', 'a')
-    i = 0
-    p = primes[i]
-    while (p <= 23):
-        p = primes[i]
-        n = 2
-        while(n < len(irps[i])):
-            f.write(str(p)+ " " + str(n) +"\n\n")
-            s = 3
-            irp = irps[i][n]
-            elems = GLn.gen_elems(p, n)
-            mat_mul = GLn.get_mul_table(p, n, irp)
-            mat_sum = GLn.get_sum_table(p, n)
-            while(s <= 100):
-                time = []
-                x = GLn.Vect(s,p,n,irp,elems,mat_mul,mat_sum)
-                for j in range(10):
-                    a = timeit.default_timer()
-                    parS = Hurley.initSender(s, p, n, irp, elems, mat_mul, mat_sum)
-                    parR = Hurley.initReciever(s, p, n, irp, elems, mat_mul, mat_sum)
 
-                    mesR1 = Hurley.rec1(parR)
-                    mesS1 = Hurley.sen1(x, parS, mesR1)
-                    mesR2 = Hurley.rec2(parR, mesS1)
-                    mesS2 = Hurley.sen2(parS, mesR2)
-                    res = Hurley.getMes(parR, mesS2)
-                    t = timeit.default_timer() - a
-                    time.append(t)
-                    if (t > 2):
-                        res_t = mean(time)
-                        f.write(str(p) + " " + str(n) + " " + str(s) + " " + str(res_t) + "\n")
-                        f.close()
-                        f = open('D:\pyproject\GitHub\Protocol\experiments\prot_primes_diag.txt', 'a')
-                        break
-                res_t = mean(time)
-                f.write(str(p) + " " + str(n) + " " + str(s) + " " + str(res_t) + "\n")
-                if(res_t > 2):
-                    f.close()
-                    f = open('D:\pyproject\GitHub\Protocol\experiments\prot_GF_diag.txt', 'a')
-                    break
-                if (s % 10 == 0):
-                    print(s)
-                    f.close()
-                    f = open('D:\pyproject\GitHub\Protocol\experiments\prot_GF_diag.txt', 'a')
-                s+=1
-            f.write("\n\n\n")
-            n += 1
-        i+=1
+def prot_test_diag_gf():
+    print("protocol Diag test for GF STARTED")
+#    f = open('D:\PyProjects\Protocol\experiments\prot_GF_diag_final.txt', 'w')
+#    f.close()
+    f = open('D:\PyProjects\Protocol\experiments\prot_GF_diag_final.txt', 'a')
+    s = 1750
+    while(s < 20000):
+        p = 2
+        n = 10
+        irp = irps[primes.index(p)][n]
+        elems = make_tab.elems_f(p,n)
+        mat_mul = make_tab.mul_tab_f(p,n,elems)
+        mat_sum = make_tab.sum_tab_f(p,n,elems)
+        time = []
+        x = GLn.Vect(s,p,n,irp,elems,mat_mul,mat_sum)
+        for j in range(1):
+            a = timeit.default_timer()
+            parS = Hurley.initSender(s, p, n, irp, elems, mat_mul, mat_sum)
+            parR = Hurley.initReciever(s, p, n, irp, elems, mat_mul, mat_sum)
+
+            mesR1 = Hurley.rec1(parR)
+            mesS1 = Hurley.sen1(x, parS, mesR1)
+            mesR2 = Hurley.rec2(parR, mesS1)
+            mesS2 = Hurley.sen2(parS, mesR2)
+            res = Hurley.getMes(parR, mesS2)
+            t = timeit.default_timer() - a
+            time.append(t)
+        res_t = mean(time)
+        f.write('{:>4}'.format(str(p**n))+'{:>3}'.format(str(p)) + '{:>3}'.format(str(n)) + " " + str(s) + " " + str(res_t) + "\n")
+        f.close()
+        f = open('D:\PyProjects\Protocol\experiments\prot_GF_diag_final.txt', 'a')
+        print(s)
+        s+=250
     f.close()
     print("protocol Diag test for GF FINISHED")
 
-def prot_test_cyclic_GF():
+
+def prot_test_cyclic_gf():
     print("protocol Cyclic test for GF STARTED")
-    f = open('D:\pyproject\GitHub\Protocol\experiments\prot_GF_cyc.txt', 'w')
-    f.close()
-    f = open('D:\pyproject\GitHub\Protocol\experiments\prot_GF_cyc.txt', 'a')
-    i = 0
+#    f = open('D:\PyProjects\Protocol\experiments\prot_GF_cyc.txt', 'w')
+#    f.close()
+    f = open('D:\PyProjects\Protocol\experiments\prot_GF_cyc.txt', 'a')
+    i = 5
     p = primes[i]
     while (p <= 23):
         p = primes[i]
         n = 2
-        while(n < len(irps[i])):
+        while(n < 3):
             f.write(str(p)+ " " + str(n) +"\n\n")
             s = 3
             irp = irps[i][n]
             elems = GLn.gen_elems(p, n)
             mat_mul = GLn.get_mul_table(p, n, irp)
             mat_sum = GLn.get_sum_table(p, n)
-            while(s <= 100):
+            while(s <= 3):
                 time = []
                 c = GLn.GL_f(p,n,irp,s,elems,mat_mul,mat_sum)
                 x = GLn.Vect(s,p,n,irp,elems,mat_mul,mat_sum)
@@ -304,17 +196,17 @@ def prot_test_cyclic_GF():
                         res_t = mean(time)
                         f.write(str(p) + " " + str(n) + " " + str(s) + " " + str(res_t) + "\n")
                         f.close()
-                        f = open('D:\pyproject\GitHub\Protocol\experiments\prot_primes_diag.txt', 'a')
+                        f = open('D:\PyProjects\Protocol\experiments\prot_GF_cyc.txt', 'a')
                         break
                 res_t = mean(time)
                 f.write(str(p) + " " + str(n) + " " + str(s) + " " + str(res_t) + "\n")
                 if(res_t > 2):
                     f.close()
-                    f = open('D:\pyproject\GitHub\Protocol\experiments\prot_GF_cyc.txt', 'a')
+                    f = open('D:\PyProjects\Protocol\experiments\prot_GF_cyc.txt', 'a')
                     break
                 print(s)
                 f.close()
-                f = open('D:\pyproject\GitHub\Protocol\experiments\prot_GF_cyc.txt', 'a')
+                f = open('D:\PyProjects\Protocol\experiments\prot_GF_cyc.txt', 'a')
                 s+=1
             f.write("\n\n\n")
             n += 1
@@ -322,12 +214,7 @@ def prot_test_cyclic_GF():
     f.close()
     print("protocol Cyclic test for GF FINISHED")
 
-dh_pow_test()
-pow_test()
-prot_test_diag_GF()
-prot_test_cyclic_GF()
-prot_test_cyclic_prime()
-prot_test_diag_prime()
-det_bar_test()
-det_test()
+
+
+prot_test_diag_gf()
 
